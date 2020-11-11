@@ -9,7 +9,7 @@
  * X,Y,distance: 目标物体的位移参数，目标框中点附近的三维坐标
  */
 bool SendData::sendData(pcl::ModelCoefficients::Ptr coefficients_cylinder, double X, double Y, double distance){
-    std::cout << "X: " << X << "m   Y:" << Y << "m   Z: " <<distance << "m" << std::endl;
+    std::cout << "2:" << std::this_thread::get_id << std::endl;
     double x_degree = 0.0;
     if(coefficients_cylinder->values[3] > 0)
         x_degree = acos(coefficients_cylinder->values[3])/pi*180;
@@ -25,6 +25,7 @@ bool SendData::sendData(pcl::ModelCoefficients::Ptr coefficients_cylinder, doubl
         z_degree = acos(coefficients_cylinder->values[5])/pi*180;
     else
         z_degree = -acos(coefficients_cylinder->values[5])/pi*180;
+    std::cout << "X: " << X << "m   Y:" << Y << "m   Z: " <<distance << "m" << std::endl;
     std::cout << "x轴:" <<  (x_degree>0?x_degree:180+x_degree) << "度"
               << "y轴:" <<  (y_degree>0?y_degree:180+y_degree) << "度"
               << "z轴:" <<  (z_degree>0?z_degree:180+z_degree) << "度" << std::endl;

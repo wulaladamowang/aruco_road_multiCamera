@@ -67,6 +67,8 @@ sl/Camera.hpp
 ../include/SendData.h
 pcl/segmentation/sac_segmentation.h
 -
+thread
+-
 
 /home/wh/code/C++Code/aruco_road_multiCamera/main.cpp
 iostream

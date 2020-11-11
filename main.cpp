@@ -11,7 +11,7 @@
 #include "GetPosition.h"
 #include "SendData.h"
 
-void zed_process(sl::Camera& zed, int& n, cv::Mat& img_left, bool& run, sl::Timestamp& ts);
+void zed_process(sl::Camera& zed, cv::Mat& img_left, bool& run, sl::Timestamp& ts);
 
 int main(int argc, char** argv){
     sl::InitParameters init_parameters;
@@ -53,7 +53,7 @@ int main(int argc, char** argv){
             // create an image to store Left+Depth image
             images_lr[z] = cv::Mat::ones(1920, 1080, CV_8UC4);
             // camera acquisition thread
-            thread_pool[z] = std::thread(zed_process, std::ref(zeds[z]), std::ref(z),std::ref(images_lr[z]), std::ref(run), std::ref(images_ts[z]));
+            thread_pool[z] = std::thread(zed_process, std::ref(zeds[z]),std::ref(images_lr[z]), std::ref(run), std::ref(images_ts[z]));
             // create windows for display
             wnd_names[z] = "ZED ID: " + std::to_string(z);
             cv::namedWindow(wnd_names[z]);
@@ -81,7 +81,7 @@ int main(int argc, char** argv){
             thread_pool[z].join();
     return 0;
 }
-void zed_process(sl::Camera& zed, int& n, cv::Mat& img_left, bool& run, sl::Timestamp& ts){
+void zed_process(sl::Camera& zed, cv::Mat& img_left, bool& run, sl::Timestamp& ts){
     GetImg getImg;
     sl::Mat point_cloud;
     std::vector<std::vector<cv::Point2f>> marker_corners;
@@ -100,8 +100,6 @@ void zed_process(sl::Camera& zed, int& n, cv::Mat& img_left, bool& run, sl::Time
     cv::Rect rect_roi;
     pcl::PointCloud<pcl::PointXYZ>::Ptr p_point_cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
-    std::string str = "Point_cloud" + std::to_string(n);
-    pcl::visualization::CloudViewer viewer(str);
     pcl::ModelCoefficients::Ptr coefficients_cylinder(new pcl::ModelCoefficients);
     pcl::PointIndices::Ptr inliers_cylinder(new pcl::PointIndices);
     GetPosition getPosition;
@@ -109,6 +107,7 @@ void zed_process(sl::Camera& zed, int& n, cv::Mat& img_left, bool& run, sl::Time
     SendData sendData;
 
     while (run){
+        std::cout << "1:" << std::this_thread::get_id << std::endl;
         getImg.grubImage(zed);
         getImg.getImage("left",img_left);
         getImg.getPointCloud(point_cloud);
@@ -123,7 +122,6 @@ void zed_process(sl::Camera& zed, int& n, cv::Mat& img_left, bool& run, sl::Time
             
             getRoiPointCloud.setMaskToPointCloud(img_left, p_point_cloud, rect_roi, mask, point_cloud);
             getRoiPointCloud.getPosition(X, Y, distance);
-            viewer.showCloud(p_point_cloud);
             getPosition.setPointCloudToPosition(p_point_cloud, coefficients_cylinder, inliers_cylinder);
         }else
         {

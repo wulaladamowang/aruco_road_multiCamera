@@ -6,6 +6,7 @@
 #define ARUCO_ROAD_SENDDATA_H
 
 #include <pcl/segmentation/sac_segmentation.h>
+#include <thread>
 class SendData {
 private:
     const double pi = acos(-1.0);
