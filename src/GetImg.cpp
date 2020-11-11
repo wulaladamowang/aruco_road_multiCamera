@@ -28,58 +28,59 @@ cv::Mat slMat2cvMat(sl::Mat &input) {
  * 初始化相机
  */
 GetImg::GetImg() {
-    if(is_opened)
-        zed.close();
-    is_opened = false;
-    // Set configuration parameters
-    sl::InitParameters init_params;
-    init_params.camera_resolution = sl::RESOLUTION::HD1080;
-    init_params.depth_mode = sl::DEPTH_MODE::ULTRA;
-    init_params.coordinate_units = sl::UNIT::METER;
-    init_params.coordinate_system = sl::COORDINATE_SYSTEM::LEFT_HANDED_Y_UP;
-    sl::ERROR_CODE err = zed.open(init_params);
-    if (err != sl::ERROR_CODE::SUCCESS) {
-        std::cout << "ZED打开失败: " << toString(err).c_str() << std::endl;
-        zed.close();
-        is_opened = false; // Quit if an error occurred
-    } else
-    {
-        is_opened = true;
-        std::cout << "ZED打开成功" << std::endl;
-    }
+    // if(is_opened)
+    //     zed.close();
+    // is_opened = false;
+    // // Set configuration parameters
+    // sl::InitParameters init_params;
+    // init_params.camera_resolution = sl::RESOLUTION::HD1080;
+    // init_params.depth_mode = sl::DEPTH_MODE::ULTRA;
+    // init_params.coordinate_units = sl::UNIT::METER;
+    // init_params.coordinate_system = sl::COORDINATE_SYSTEM::LEFT_HANDED_Y_UP;
+    // sl::ERROR_CODE err = zed.open(init_params);
+    // if (err != sl::ERROR_CODE::SUCCESS) {
+    //     std::cout << "ZED打开失败: " << toString(err).c_str() << std::endl;
+    //     zed.close();
+    //     is_opened = false; // Quit if an error occurred
+    // } else
+    // {
+    //     is_opened = true;
+    //     std::cout << "ZED打开成功" << std::endl;
+    // }
 }
 /*
  *
  */
-GetImg::GetImg(char *file) {
-    if(is_opened)
-        zed.close();
-    sl::InitParameters init_params;
-    init_params.input.setFromSVOFile(file);
-    sl::ERROR_CODE err = zed.open(init_params);
-    if (err != sl::ERROR_CODE::SUCCESS) {
-        std::cout << "文件打开失败: " << toString(err).c_str() << std::endl;
-        zed.close();
-        is_opened = false;
-    } else
-    {
-        is_opened = true;
-        std::cout << "文件打开成功" << std::endl;
-    }
-}
+// GetImg::GetImg(char *file) {
+//     if(is_opened)
+//         zed.close();
+//     sl::InitParameters init_params;
+//     init_params.input.setFromSVOFile(file);
+//     sl::ERROR_CODE err = zed.open(init_params);
+//     if (err != sl::ERROR_CODE::SUCCESS) {
+//         std::cout << "文件打开失败: " << toString(err).c_str() << std::endl;
+//         zed.close();
+//         is_opened = false;
+//     } else
+//     {
+//         is_opened = true;
+//         std::cout << "文件打开成功" << std::endl;
+//     }
+// }
 /*
  * 抓取图像
  */
-void GetImg::grubImage()
+void GetImg::grubImage(sl::Camera& zed_input)
 {
-    if (zed.grab(sl::SENSING_MODE::STANDARD) == sl::ERROR_CODE::SUCCESS){
-        zed.retrieveImage(img_left_zed, sl::VIEW::LEFT, sl::MEM::CPU);
+    if (zed_input.grab(sl::SENSING_MODE::STANDARD) == sl::ERROR_CODE::SUCCESS){
+        zed_input.retrieveImage(img_left_zed, sl::VIEW::LEFT, sl::MEM::CPU);
         img_left_cv = slMat2cvMat(img_left_zed);
         cv::cvtColor(img_left_cv,img_left_cv,cv::COLOR_BGRA2BGR);
 //        zed.retrieveImage(img_right_zed, sl::VIEW::RIGHT, sl::MEM::CPU);
 //        img_right_cv = slMat2cvMat(img_right_zed);
 //        cv::cvtColor(img_right_cv,img_right_cv,cv::COLOR_BGRA2BGR);
-        zed.retrieveMeasure(point_cloud, sl::MEASURE::XYZRGBA, sl::MEM::CPU);
+        zed_input.retrieveMeasure(point_cloud, sl::MEASURE::XYZRGBA, sl::MEM::CPU);
+        ts_g = zed_input.getTimestamp(sl::TIME_REFERENCE::IMAGE);
     }
     else
         sl::sleep_ms(1);

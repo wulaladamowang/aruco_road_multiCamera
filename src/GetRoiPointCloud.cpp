@@ -10,7 +10,7 @@
  * mask: 识别到的目标区域的位置，其为旋转的最小矩形框，目标区域被置为1
  * point_cloud: 点云图，每个Input_detect_img上的点对应一个三维坐标
  */
-bool GetRoiPointCloud::setMaskToPointCloud(cv::Mat input_dectect_img, pcl::PointCloud<pcl::PointXYZ>::Ptr& p_point_cloud, cv::Rect rect_roi, cv::Mat mask, sl::Mat& point_cloud)
+bool GetRoiPointCloud::setMaskToPointCloud(cv::Mat& input_dectect_img, pcl::PointCloud<pcl::PointXYZ>::Ptr& p_point_cloud, cv::Rect rect_roi, cv::Mat mask, sl::Mat& point_cloud)
 {
     cv::Mat img_gray = cv::Mat::zeros(rect_roi.width, rect_roi.height, CV_8UC1);
     cv::Mat roi_rect = input_dectect_img(rect_roi).clone();
@@ -72,9 +72,10 @@ bool GetRoiPointCloud::setMaskToPointCloud(cv::Mat input_dectect_img, pcl::Point
                    (y+j)<input_dectect_img.rows && (y+j)>=0 &&
                    (0!=mask.ptr(y)[x]))
                 {
+                    
                     sl::float4 point_3d;
                     point_cloud.getValue(x+i, y+j, &point_3d);
-                
+            
                     float z = point_3d.z;
                     if(!isValidMeasure(z) || max<z || min>z) {
                     }else{

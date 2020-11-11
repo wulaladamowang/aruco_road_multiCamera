@@ -26,7 +26,7 @@ private:
 public:
     GetRoiPointCloud(){};
     ~GetRoiPointCloud(){};
-    bool setMaskToPointCloud(cv::Mat input_dectect_img, pcl::PointCloud<pcl::PointXYZ>::Ptr& p_point_cloud, cv::Rect rect_roi, cv::Mat mask, sl::Mat& point_cloud);
+    bool setMaskToPointCloud(cv::Mat& input_dectect_img, pcl::PointCloud<pcl::PointXYZ>::Ptr& p_point_cloud, cv::Rect rect_roi, cv::Mat mask, sl::Mat& point_cloud);
     inline void getPosition(float& x, float& y, float& z){
         x = X;
         y = Y;

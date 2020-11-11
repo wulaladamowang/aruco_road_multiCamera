@@ -14,14 +14,14 @@
 class GetImg{
 public:
     GetImg();
-    GetImg(char* file);
+    // GetImg(char* file);
     ~GetImg(){
-        if(is_opened)
-            zed.close();
+        // if(is_opened)
+        //     zed.close();
     }
     friend cv::Mat slMat2cvMat(sl::Mat& input);
     //程序未加锁img_left_cv，所以抓取和提取不应当分线程, 抓取图像
-    void grubImage();
+    void grubImage(sl::Camera& zed_input);
     // 获得图像或点云
     inline void getImage(char* left_or_right, cv::Mat& output_img) const
     {
@@ -34,6 +34,9 @@ public:
     {
         output_point_cloud = point_cloud;
     }
+    inline void getTimestamp(sl::Timestamp& input_timestamp){
+        input_timestamp = ts_g;
+    }
 private:
     bool is_opened = false;
     sl::Camera zed;
@@ -43,6 +46,7 @@ private:
     sl::Mat img_right_zed;
     cv::Mat img_right_cv;
     sl::Mat point_cloud;
+    sl::Timestamp ts_g;
 };
 
 #endif //ARUCO_ROAD_GETIMG_H
